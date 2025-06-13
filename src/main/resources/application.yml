@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: stockexchange
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: pass
+    virtual-host: local
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  level:
+    org.hibernate.SQL: trace
+
+broker:
+  application-destination-prefix: /app
+  destination-prefix: /topic
+  endpoint: /stock
+  relay-host: localhost
+  relay-port: 61613
+  client-login: user
+  client-passcode: pass
+  virtual-host: local

@@ -1,0 +1,96 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: on-failure:15
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=pass
+      - RABBITMQ_LOAD_DEFINITIONS=/etc/rabbitmq/definitions.json
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 61613:61613
+    command: >
+        sh -c "rabbitmq-plugins enable rabbitmq_stomp && rabbitmq-server"
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    restart: on-failure:15
+    environment:
+      - INFLUXDB_DB=test
+      - INFLUXDB_ADMIN_USER=telegraf
+      - INFLUXDB_ADMIN_PASSWORD=telegraf    
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    ports:
+      - "8086:8086"
+    depends_on:
+      - rabbitmq  
+  
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    restart: on-failure:15
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf
+      - telegraf_data:/var/lib/telegraf
+    ports:
+      - 8125:8125/udp
+    depends_on:
+      - influxdb
+      
+  chronograf:
+    image: chronograf:latest
+    container_name: chronograf
+    restart: on-failure:15
+    volumes:
+      - chronograf_data:/var/lib/chronograf
+    ports:
+      - 8888:8888
+    command: ["chronograf", "--influxdb-url=http://influxdb:8086"]
+    depends_on:
+      - telegraf
+
+  kapacitor:
+    image: kapacitor:latest
+    container_name: kapacitor
+    restart: on-failure:15
+    environment:
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
+    volumes:
+      - kapacitor_data:/var/lib/kapacitor
+    depends_on:
+      - chronograf
+      
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: on-failure:15
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+    volumes:
+      - ./datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - kapacitor
+            
+volumes:
+  rabbitmq_data:    
+  influxdb_data:
+  telegraf_data:
+  chronograf_data:
+  kapacitor_data:
+  grafana_data:
+    
+      
+      
