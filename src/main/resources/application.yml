@@ -7,16 +7,24 @@ spring:
       static-locations: classpath:/static/
 
   datasource:
+    name: stockDataSource
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password: password
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+      pool-name: HikariPool
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
-    generate-ddl: true
+    generate-ddl: false
     open-in-view: false
 
   h2:
@@ -29,6 +37,11 @@ spring:
     username: user
     password: pass
     virtual-host: local
+
+  flyway:
+    enabled: true
+    datasource: stockDataSource
+    locations: classpath:db/migration
 
 server:
   port: 8080
@@ -50,16 +63,46 @@ management:
       probes:
         enabled: true
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+  packages-to-scan: com.cardconnect.stom.stockexchange
+
 logging:
   level:
-    org.hibernate.SQL: trace
+    root: info
+    org.springdoc: debug
+    org.springframework: error
+    com.cardconnect.stom.stockexchange: trace
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%level] [%logger] - %msg%n"
 
 broker:
   application-destination-prefix: /app
   destination-prefix: /topic
-  endpoint: /stock
+  endpoint: /stock-exchange
   relay-host: localhost
   relay-port: 61613
   client-login: user
   client-passcode: pass
   virtual-host: local
+
+jwt:
+    secret: your-256-bit-secret-your-256-bit-secret
+    expiration: 86400000
+    issuer: stockexchange
+
+scheduler:
+    enabled: true
+    pool:
+        size: 10
+        thread-name-prefix: stockexchange-scheduler-
+    tasks:
+        stock-price-update:
+          initial-delay: 5000
+          fixed-delay: 30000
+          enabled: true

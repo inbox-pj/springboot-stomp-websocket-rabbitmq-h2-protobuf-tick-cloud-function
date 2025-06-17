@@ -1,5 +1,11 @@
+const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwamFpc3dhbCIsInJvbGUiOiJBRE1JTiIsImlzcyI6InN0b2NrZXhjaGFuZ2UiLCJpYXQiOjE3NTAxNTkxODMsImV4cCI6MTc1MDI0NTU4M30.8cbwGAmd7AaRO9CPQHK2gX-m9_7YXqXeHMFlXIxFJ2Q'
+//const encodedToken = encodeURIComponent(token); // Properly encode the token
+
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/stock'
+    brokerURL: `ws://localhost:8080/stock-exchange?token=${token}`,
+    reconnectDelay: 5000, // Attempt reconnection after 5 seconds on disconnection
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000
 });
 
 stompClient.onConnect = (frame) => {
