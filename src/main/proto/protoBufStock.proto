@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package com.cardconnect.stom.stockexchange.proto;
+
+// Enum for stock status
+enum StockStatus {
+  UNKNOWN = 0; // Default value
+  ACTIVE = 1;
+  INACTIVE = 2;
+  DELISTED = 3;
+}
+
+// Nested message for stock metadata
+message StockMetadata {
+  string createdBy = 1; // Mandatory
+  string updatedBy = 2; // Optional
+  int64 createdAt = 3; // Mandatory, Timestamp in milliseconds
+  int64 updatedAt = 4; // Optional, Timestamp in milliseconds
+}
+
+// Main StockRequest message
+message ProtoStockRequest {
+  int64 id = 1; // Mandatory
+  string name = 2; // Mandatory, cannot be null
+  double price = 3; // Mandatory, must be greater than 0
+  StockStatus status = 4; // Optional, defaults to UNKNOWN
+  repeated string tags = 5; // Optional, max size of each tag: 50 characters
+  map<string, string> attributes = 6; // Optional, max key-value pairs: 10
+  StockMetadata metadata = 7; // Mandatory, nested metadata message
+  oneof stockType { // Optional, only one can be set
+    string equity = 8; // Optional
+    string bond = 9; // Optional
+    string mutualFund = 10; // Optional
+  }
+  repeated StockHistory history = 11; // Optional, max size: 100 entries
+}
+
+// Message for stock history
+message StockHistory {
+  int64 timestamp = 1; // Mandatory, Timestamp in milliseconds
+  double price = 2; // Mandatory, must be greater than 0
+  string note = 3; // Optional, max length: 200 characters
+}
