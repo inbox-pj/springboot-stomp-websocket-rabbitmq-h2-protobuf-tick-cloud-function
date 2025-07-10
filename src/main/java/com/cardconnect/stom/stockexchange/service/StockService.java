@@ -1,9 +1,12 @@
 package com.cardconnect.stom.stockexchange.service;
 
+import com.cardconnect.stom.stockexchange.annotations.ReadOnly;
+import com.cardconnect.stom.stockexchange.annotations.WriteOnly;
 import com.cardconnect.stom.stockexchange.entity.Stock;
 import com.cardconnect.stom.stockexchange.mapper.StockMapper;
 import com.cardconnect.stom.stockexchange.model.StockRequest;
 import com.cardconnect.stom.stockexchange.repository.StockRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,11 +23,14 @@ public class StockService {
         this.stockMapper = stockMapper;
     }
 
+    @WriteOnly
+    //@Transactional
     public Stock saveStock(StockRequest stock) {
         Stock entity = stockMapper.toEntity(stock);
         return stockRepository.save(entity);
     }
 
+    @ReadOnly
     public List<StockRequest> getAllStocks() {
         return stockRepository.findAll()
                 .stream()
@@ -33,6 +39,8 @@ public class StockService {
 
     }
 
+    @WriteOnly
+    @Transactional
     public void deleteStock(Long id) {
         stockRepository.deleteById(id);
     }

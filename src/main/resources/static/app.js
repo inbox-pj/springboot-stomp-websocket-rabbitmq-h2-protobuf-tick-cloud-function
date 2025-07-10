@@ -1,4 +1,4 @@
-const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwamFpc3dhbCIsInJvbGUiOiJBRE1JTiIsImlzcyI6InN0b2NrZXhjaGFuZ2UiLCJpYXQiOjE3NTAxNTkxODMsImV4cCI6MTc1MDI0NTU4M30.8cbwGAmd7AaRO9CPQHK2gX-m9_7YXqXeHMFlXIxFJ2Q'
+const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwamFpc3dhbCIsInJvbGUiOiJBRE1JTiIsImlzcyI6InN0b2NrZXhjaGFuZ2UiLCJpYXQiOjE3NTIxMzYxNjEsImV4cCI6MTc1MjIyMjU2MX0.eVrWm_J1MFQzbR28duo6SfQOas-OiB2z9xbOBOYebLE'
 //const encodedToken = encodeURIComponent(token); // Properly encode the token
 
 const stompClient = new StompJs.Client({
