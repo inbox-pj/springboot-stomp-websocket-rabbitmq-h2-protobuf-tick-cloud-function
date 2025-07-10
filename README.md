@@ -1,29 +1,66 @@
-# Getting Started
+# Spring Boot STOMP WebSocket RabbitMQ H2 Stock Exchange Application
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Overview
+This project is a stock exchange application built using Spring Boot. It provides real-time stock updates, user authentication, and scheduling functionalities. The application leverages STOMP WebSocket for live communication, RabbitMQ for message brokering, and H2 as an in-memory database. It also supports dynamic data source routing for read and write operations, cloud functions for stock updates, and Protobuf serialization for efficient data handling.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.0/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.0/maven-plugin/build-image.html)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.5.0/reference/using/devtools.html)
-* [Flyway Migration](https://docs.spring.io/spring-boot/3.5.0/how-to/data-initialization.html#howto.data-initialization.migration-tool.flyway)
-* [WebSocket](https://docs.spring.io/spring-boot/3.5.0/reference/messaging/websockets.html)
-* [Spring Boot Actuator](https://docs.spring.io/spring-boot/3.5.0/reference/actuator/index.html)
+## Features
+- **Real-time Stock Updates**: Uses STOMP WebSocket for live stock data updates.
+- **Message Brokering**: RabbitMQ integration for handling stock-related messages.
+- **Database**: H2 in-memory database for storing stock data.
+- **Dynamic Data Source Routing**: Separate read and write databases for optimized performance.
+- **Authentication**: JWT-based authentication for secure access.
+- **Scheduling**: Scheduled tasks for stock updates using Spring Scheduler.
+- **Cloud Functions**: `StockUpdateSchedulerFunction` for cloud-based stock updates.
+- **Protobuf Serialization**: Efficient serialization of stock data using Protobuf.
+- **Exception Handling**: Global exception management for the application.
 
-### Guides
-The following guides illustrate how to use some features concretely:
+## Tools and Technologies
+- **Languages**: Java, SQL, JavaScript
+- **Frameworks**: Spring Boot
+- **Build Tool**: Maven
+- **Database**: H2 (in-memory)
+- **Message Broker**: RabbitMQ
+- **Serialization**: Protobuf
+- **WebSocket Protocol**: STOMP
+- **Authentication**: JWT
+- **Containerization**: Docker (optional for TICK stack)
+- **Monitoring**: TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor)
 
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
-* [Using WebSocket to build an interactive web application](https://spring.io/guides/gs/messaging-stomp-websocket/)
-* [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
+## Project Structure
+### Main Components
+- **Annotations**: Custom annotations like `ReadOnly` and `WriteOnly`.
+- **Aspect**: `DataSourceAspect` for handling dynamic data source routing.
+- **CLI**: `JWTCommandLineRunner` for initializing JWT-related configurations.
+- **Cloud Functions**: `StockUpdateSchedulerFunction` for cloud-based stock updates.
+- **Configuration**: Includes WebSocket, Security, Scheduler, and DataSource configurations.
+- **Controllers**: `StockMarketController` for handling stock-related API requests.
+- **Entities**: `Stock` entity and related enums.
+- **Exception Handling**: `GlobalExceptionHandler` for managing application exceptions.
+- **Filters**: `JwtAuthenticationFilter` for securing endpoints.
+- **Listeners**: `WebSocketEventListener` for WebSocket events.
+- **Mappers**: `StockMapper` for mapping entities and models.
+- **Models**: `Stock` and `StockRequest` for data representation.
+- **Repositories**: `StockRepository` for database operations.
+- **Schedulers**: `StockUpdateScheduler` for periodic stock updates.
+- **Services**: `StockService` for business logic.
+- **Utilities**: `JwtUtil` for JWT token management.
 
-### Maven Parent overrides
+### Resources
+- **Configuration Files**: `application.yml` for application settings.
+- **Database Migration**: SQL scripts for database schema setup.
+- **Static Files**: Frontend assets like `app.js`, `index.html`, and `main.css`.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+### Test
+- Unit tests for application components.
+
+### TICK Stack
+- Configuration files for RabbitMQ, Telegraf, and Docker Compose.
+
+## Prerequisites
+- Java 17+
+- Maven
+- RabbitMQ
+- Docker (optional for TICK stack)
 
 ### generate token:
 ```java -jar target/stockexchange-0.0.1-SNAPSHOT.jar generate-token -n pjaiswal -r ADMIN -i true```
