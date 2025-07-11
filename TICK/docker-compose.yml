@@ -1,17 +1,18 @@
 services:
+#  message broker for AMQP communication
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
+    container_name: metrics
     restart: on-failure:15
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=pass
-      - RABBITMQ_LOAD_DEFINITIONS=/etc/rabbitmq/definitions.json
+      - RABBITMQ_LOAD_DEFINITIONS=/etc/metrics/definitions.json
       - RABBITMQ_DEFAULT_VHOST=/
     volumes:
-      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
-      - rabbitmq_data:/var/lib/rabbitmq
+      - ./metrics.conf:/etc/metrics/metrics.conf:ro
+      - ./definitions.json:/etc/metrics/definitions.json:ro
+      - rabbitmq_data:/var/lib/metrics
     ports:
       - 5672:5672
       - 15672:15672
@@ -19,6 +20,20 @@ services:
     command: >
         sh -c "rabbitmq-plugins enable rabbitmq_stomp && rabbitmq-server"
 
+  #  Collects metrics and sends them to InfluxDB
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    restart: on-failure:15
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf
+      - telegraf_data:/var/lib/telegraf
+    ports:
+      - 8125:8125/udp
+    depends_on:
+      - influxdb
+
+#  Time-series database for storing metrics
   influxdb:
     image: influxdb:1.8
     container_name: influxdb
@@ -33,19 +48,8 @@ services:
       - "8086:8086"
     depends_on:
       - rabbitmq  
-  
-  telegraf:
-    image: telegraf:latest
-    container_name: telegraf
-    restart: on-failure:15
-    volumes:
-      - ./telegraf.conf:/etc/telegraf/telegraf.conf
-      - telegraf_data:/var/lib/telegraf
-    ports:
-      - 8125:8125/udp
-    depends_on:
-      - influxdb
-      
+
+#  Visualization tool for InfluxDB data
   chronograf:
     image: chronograf:latest
     container_name: chronograf
@@ -58,6 +62,7 @@ services:
     depends_on:
       - telegraf
 
+#  Real-time data processing and alerting
   kapacitor:
     image: kapacitor:latest
     container_name: kapacitor
@@ -68,7 +73,8 @@ services:
       - kapacitor_data:/var/lib/kapacitor
     depends_on:
       - chronograf
-      
+
+#  Dashboard for visualizing metrics
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
