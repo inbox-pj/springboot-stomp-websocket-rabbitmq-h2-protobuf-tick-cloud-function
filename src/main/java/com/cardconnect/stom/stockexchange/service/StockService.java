@@ -24,7 +24,7 @@ public class StockService {
     }
 
     @WriteOnly
-    //@Transactional
+    @Transactional
     public Stock saveStock(StockRequest stock) {
         Stock entity = stockMapper.toEntity(stock);
         return stockRepository.save(entity);

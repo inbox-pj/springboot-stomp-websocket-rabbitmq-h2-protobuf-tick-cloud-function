@@ -71,6 +71,12 @@ server:
     context-path: /
 
 management:
+  statsd:
+    metrics:
+      export:
+        flavor: telegraf
+        port: 8125
+        enabled: true
   endpoints:
     web:
       exposure:
@@ -128,3 +134,7 @@ scheduler:
           initial-delay: 5000
           fixed-delay: 30000
           enabled: true
+
+rabbitmq:
+  exchange: exch.telegraf
+  routing-key: 10

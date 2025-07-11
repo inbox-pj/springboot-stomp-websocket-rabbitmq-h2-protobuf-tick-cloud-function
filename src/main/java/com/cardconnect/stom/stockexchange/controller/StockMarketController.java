@@ -1,8 +1,10 @@
 package com.cardconnect.stom.stockexchange.controller;
 
 import com.cardconnect.stom.stockexchange.config.User;
+import com.cardconnect.stom.stockexchange.metrics.MetricsService;
 import com.cardconnect.stom.stockexchange.model.StockRequest;
 import com.cardconnect.stom.stockexchange.proto.ProtoBufStock;
+import com.cardconnect.stom.stockexchange.metrics.RabbitMQMetricsPublisher;
 import com.cardconnect.stom.stockexchange.service.StockService;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,12 @@ public class StockMarketController {
 
     private final SimpMessagingTemplate template;
     private final StockService stockService;
+    private final MetricsService metricsService;
 
-    public StockMarketController(SimpMessagingTemplate template, StockService stockService) {
+    public StockMarketController(SimpMessagingTemplate template, StockService stockService, MetricsService metricsService) {
         this.template = template;
         this.stockService = stockService;
+        this.metricsService = metricsService;
     }
 
     @MessageMapping("/updateStock")
@@ -53,6 +56,7 @@ public class StockMarketController {
     })
     @PreAuthorize("hasAnyRole('" + "ROLE_" + User.Roles.ADD + "', '" + "ROLE_" + User.Roles.ADMIN + "')")
     public StockRequest updateStockPrice(@RequestBody StockRequest stock) {
+        metricsService.send("stock.updates", 1);
         stock.setPrice(stock.getPrice() + Math.random() * 10);
         stockService.saveStock(stock);
         template.convertAndSend("/topic/stockPrices", stock);
@@ -68,6 +72,7 @@ public class StockMarketController {
     })
     @PreAuthorize("hasAnyRole('" + "ROLE_" + User.Roles.FETCH + "', '" + "ROLE_" + User.Roles.ADMIN + "')")
     public List<StockRequest> getAllStocks() {
+        metricsService.send("stock.fetches", 1);
         return stockService.getAllStocks();
     }
 
@@ -80,6 +85,7 @@ public class StockMarketController {
     })
     @PreAuthorize("hasAnyRole('" + "ROLE_" + User.Roles.DELETE + "', '" + "ROLE_" + User.Roles.ADMIN + "')")
     public void deleteStock(@PathVariable Long id) {
+        metricsService.send("stock.deletes", 1);
         stockService.deleteStock(id);
     }
 
@@ -92,6 +98,7 @@ public class StockMarketController {
     })
     @PreAuthorize("hasAnyRole('" + "ROLE_" + User.Roles.FETCH + "', '" + "ROLE_" + User.Roles.ADMIN + "')")
     public ProtoBufStock.ProtoStockRequest getStockProtoBuf() throws InvalidProtocolBufferException {
+        metricsService.send("stock.fetches", 1);
         // Create StockMetadata
         ProtoBufStock.StockMetadata metadata = ProtoBufStock.StockMetadata.newBuilder()
                 .setCreatedBy("admin")
