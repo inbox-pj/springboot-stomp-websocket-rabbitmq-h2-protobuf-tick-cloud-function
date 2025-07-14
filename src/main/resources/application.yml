@@ -71,25 +71,30 @@ server:
     context-path: /
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
   statsd:
     metrics:
       export:
         flavor: telegraf
         port: 8125
         enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: health, metrics
-  health:
-    readiness-state:
-      enabled: true
-    liveness-state:
-      enabled: true
-  endpoint:
-    health:
-      probes:
-        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 springdoc:
   api-docs:
@@ -108,6 +113,7 @@ logging:
     com.cardconnect.stom.stockexchange: trace
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%level] [%logger] - %msg%n"
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 broker:
   application-destination-prefix: /app
@@ -138,3 +144,12 @@ scheduler:
 rabbitmq:
   exchange: exch.telegraf
   routing-key: 10
+
+otel:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4318
+  logs:
+    exporter: none
+  metrics:
+    exporter: none

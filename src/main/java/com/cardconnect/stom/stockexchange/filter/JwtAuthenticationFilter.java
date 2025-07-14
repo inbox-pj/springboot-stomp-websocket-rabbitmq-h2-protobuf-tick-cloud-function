@@ -65,6 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/favicon.ico") || path.startsWith("/.well-known/") || path.startsWith("/static/") || path.equals("/index.html") || path.equals("/") || path.equals("/main.css") || path.equals("/app.js");
+        return path.startsWith("/actuator") || path.startsWith("/favicon.ico") || path.startsWith("/.well-known/") || path.startsWith("/static/") || path.equals("/index.html") || path.equals("/") || path.equals("/main.css") || path.equals("/app.js");
     }
 }
