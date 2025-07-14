@@ -24,6 +24,7 @@
         <os.detected.classifier>osx-aarch_64</os.detected.classifier>
         <spring-boot.version>3.5.3</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <otel.version>2.17.0</otel.version>
     </properties>
     <dependencies>
         <dependency>
@@ -151,7 +152,8 @@
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-statsd</artifactId>
+            <!--<artifactId>micrometer-registry-statsd</artifactId> TICK-->
+            <artifactId>micrometer-registry-prometheus</artifactId> <!-- GCS -->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -159,6 +161,18 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <!-- no code approach -->
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- java agent mode -->
+        <!--<dependency>
+            <groupId>io.opentelemetry.javaagent</groupId>
+            <artifactId>opentelemetry-javaagent</artifactId>
+            <version>${otel.version}</version>
+            <scope>runtime</scope>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -232,6 +246,13 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${otel.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

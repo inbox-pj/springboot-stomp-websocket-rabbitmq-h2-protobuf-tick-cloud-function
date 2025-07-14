@@ -1,0 +1,55 @@
+{
+  "users": [
+    {
+      "name": "user",
+      "password": "pass",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "local"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "user",
+      "vhost": "local",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "queues": [
+    {
+      "name": "telegraf",
+      "vhost": "local",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "exch.telegraf",
+      "vhost": "local",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "exch.telegraf",
+      "vhost": "local",
+      "destination": "telegraf",
+      "destination_type": "queue",
+      "routing_key": "10",
+      "arguments": {}
+    }
+  ]
+}
