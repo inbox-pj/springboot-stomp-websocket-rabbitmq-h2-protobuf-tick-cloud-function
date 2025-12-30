@@ -183,46 +183,46 @@ A comprehensive **real-time stock exchange application** built with Spring Boot 
 ### Component Overview
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              CLIENT LAYER                                    │
+│                              CLIENT LAYER                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   Browser (index.html + app.js)    │    REST Client / Swagger UI            │
-│          ↓ STOMP/WebSocket         │           ↓ HTTP/REST                   │
+│          ↓ STOMP/WebSocket         │           ↓ HTTP/REST                  │
 └─────────────────────────────────────────────────────────────────────────────┘
                                      ↓
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           SECURITY LAYER                                     │
+│                           SECURITY LAYER                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   JwtAuthenticationFilter → SecurityConfig → Role-based Access Control      │
 └─────────────────────────────────────────────────────────────────────────────┘
                                      ↓
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          APPLICATION LAYER                                   │
+│                          APPLICATION LAYER                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   StockMarketController ← → StockService ← → StockMapper                    │
-│          ↓                        ↓                                          │
+│          ↓                        ↓                                         │
 │   SimpMessagingTemplate    StockUpdateScheduler                             │
-│          ↓                        ↓                                          │
+│          ↓                        ↓                                         │
 │   WebSocket Broker         StockUpdateSchedulerFunction (Cloud)             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                      ↓
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            DATA LAYER                                        │
+│                            DATA LAYER                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   DataSourceAspect → RoutingDataSource → HikariCP (Reader/Writer Pools)     │
-│                              ↓                                               │
-│                    StockRepository (JPA)                                     │
-│                              ↓                                               │
-│                      H2 Database (In-Memory)                                 │
+│                              ↓                                              │
+│                    StockRepository (JPA)                                    │
+│                              ↓                                              │
+│                      H2 Database (In-Memory)                                │
 └─────────────────────────────────────────────────────────────────────────────┘
                                      ↓
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         MESSAGING LAYER                                      │
+│                         MESSAGING LAYER                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   RabbitMQ (STOMP Plugin) ← → MetricsService → RabbitMQMetricsPublisher     │
 └─────────────────────────────────────────────────────────────────────────────┘
                                      ↓
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OBSERVABILITY LAYER                                    │
+│                       OBSERVABILITY LAYER                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   TICK Stack                    │    Grafana Cloud Stack (GCS)              │
 │   ├── Telegraf (Metrics)        │    ├── Prometheus (Metrics)               │
